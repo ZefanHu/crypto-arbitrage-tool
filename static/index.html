@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h2, h3 {
+            color: #1a73e8;
+            margin-top: 20px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 8px;
+        }
+        .formula-box {
+            background-color: #f1f8ff;
+            border-left: 4px solid #1a73e8;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+            font-family: "Consolas", monospace;
+            overflow-x: auto;
+        }
+        .code-box {
+            background-color: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: "Consolas", monospace;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+        .code-box .comment {
+            color: #6a9955;
+        }
+        .code-box .keyword {
+            color: #569cd6;
+        }
+        .code-box .string {
+            color: #ce9178;
+        }
+        .code-box .function {
+            color: #dcdcaa;
+        }
+        .example-box {
+            background-color: #f0f4f8;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 15px 0;
+            border-left: 4px solid #5a6268;
+        }
+        .highlight {
+            background-color: #fff3cd;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        .calculator {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border: 1px solid #dee2e6;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #1a73e8;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #1557b0;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .profit {
+            background-color: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+        .loss {
+            background-color: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+        .tab {
+            overflow: hidden;
+            border: 1px solid #ccc;
+            background-color: #f1f1f1;
+            border-radius: 4px 4px 0 0;
+        }
+        .tab button {
+            background-color: inherit;
+            float: left;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 10px 16px;
+            transition: 0.3s;
+            color: #333;
+            font-weight: normal;
+        }
+        .tab button:hover {
+            background-color: #ddd;
+        }
+        .tab button.active {
+            background-color: #1a73e8;
+            color: white;
+        }
+        .tabcontent {
+            display: none;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-top: none;
+            border-radius: 0 0 4px 4px;
+            animation: fadeEffect 1s;
+        }
+        @keyframes fadeEffect {
+            from {opacity: 0;}
+            to {opacity: 1;}
+        }
+        .direction-switch {
+            display: flex;
+            margin: 15px 0;
+            background-color: #f1f1f1;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .direction-switch button {
+            flex: 1;
+            background-color: #f1f1f1;
+            color: #333;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+        }
+        .direction-switch button.active {
+            background-color: #1a73e8;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>三角套利判别式与计算方法</h2>
+        
+        <h3>1. 基本判别式（考虑手续费）</h3>
+        
+        <div class="formula-box">
+            <p><strong>正向套利路径: USDT → USD → BTC → USDT</strong></p>
+            <p>设每笔交易手续费率为 f = 0.1% = 0.001</p>
+            <p>套利条件: (USDT→USD) × (USD→BTC) × (BTC→USDT) × (1-f)³ > 1</p>
+            <p>其中:</p>
+            <p>- USDT→USD: 1 USDT 能兑换的 USD 数量</p>
+            <p>- USD→BTC: 1 USD 能兑换的 BTC 数量</p>
+            <p>- BTC→USDT: 1 BTC 能兑换的 USDT 数量</p>
+            <p>- (1-f)³: 三笔交易的手续费因子</p>
+        </div>
+        
+        <div class="formula-box">
+            <p><strong>反向套利路径: USDT → BTC → USD → USDT</strong></p>
+            <p>套利条件: (USDT→BTC) × (BTC→USD) × (USD→USDT) × (1-f)³ > 1</p>
+            <p>其中:</p>
+            <p>- USDT→BTC: 1 USDT 能兑换的 BTC 数量</p>
+            <p>- BTC→USD: 1 BTC 能兑换的 USD 数量</p>
+            <p>- USD→USDT: 1 USD 能兑换的 USDT 数量</p>
+        </div>
+        
+        <h3>2. 实际计算方法</h3>
+        
+        <div class="code-box">
+            <pre><span class="comment"># 正向套利判别 (USDT → USD → BTC → USDT)</span>
+<span class="keyword">def</span> <span class="function">forward_arbitrage_check</span>(usdt_usd_rate, usd_btc_rate, btc_usdt_rate, fee_rate=0.001):
+    <span class="comment"># usdt_usd_rate: 1 USDT 可兑换的 USD 数量</span>
+    <span class="comment"># usd_btc_rate: 1 USD 可兑换的 BTC 数量</span>
+    <span class="comment"># btc_usdt_rate: 1 BTC 可兑换的 USDT 数量</span>
+    
+    <span class="comment"># 计算套利条件</span>
+    arbitrage_condition = usdt_usd_rate * usd_btc_rate * btc_usdt_rate * (1-fee_rate)**3
+    
+    <span class="comment"># 判断是否有套利机会</span>
+    <span class="keyword">if</span> arbitrage_condition > 1:
+        profit_percentage = (arbitrage_condition - 1) * 100
+        <span class="keyword">return</span> <span class="keyword">True</span>, profit_percentage
+    <span class="keyword">else</span>:
+        <span class="keyword">return</span> <span class="keyword">False</span>, (arbitrage_condition - 1) * 100
+
+<span class="comment"># 反向套利判别 (USDT → BTC → USD → USDT)</span>
+<span class="keyword">def</span> <span class="function">reverse_arbitrage_check</span>(usdt_btc_rate, btc_usd_rate, usd_usdt_rate, fee_rate=0.001):
+    <span class="comment"># usdt_btc_rate: 1 USDT 可兑换的 BTC 数量</span>
+    <span class="comment"># btc_usd_rate: 1 BTC 可兑换的 USD 数量</span>
+    <span class="comment"># usd_usdt_rate: 1 USD 可兑换的 USDT 数量</span>
+    
+    <span class="comment"># 计算套利条件</span>
+    arbitrage_condition = usdt_btc_rate * btc_usd_rate * usd_usdt_rate * (1-fee_rate)**3
+    
+    <span class="comment"># 判断是否有套利机会</span>
+    <span class="keyword">if</span> arbitrage_condition > 1:
+        profit_percentage = (arbitrage_condition - 1) * 100
+        <span class="keyword">return</span> <span class="keyword">True</span>, profit_percentage
+    <span class="keyword">else</span>:
+        <span class="keyword">return</span> <span class="keyword">False</span>, (arbitrage_condition - 1) * 100</pre>
+        </div>
+        
+        <h3>3. 汇率转换关系</h3>
+        
+        <div class="formula-box">
+            <p><strong>正向与反向汇率的转换关系:</strong></p>
+            <p>- USDT→BTC = 1 / (BTC→USDT)</p>
+            <p>- BTC→USD = 1 / (USD→BTC)</p>
+            <p>- USD→USDT = 1 / (USDT→USD)</p>
+        </div>
+        
+        <div class="example-box">
+            <p><strong>例如:</strong></p>
+            <p>如果 1 BTC = 56,000 USDT (BTC→USDT)</p>
+            <p>那么 1 USDT = 1/56,000 BTC ≈ 0.00001786 BTC (USDT→BTC)</p>
+        </div>
+        
+        <h3>4. 套利计算器</h3>
+        
+        <div class="tab">
+            <button class="tablinks active" onclick="openTab(event, 'ForwardArbitrage')">正向套利计算器</button>
+            <button class="tablinks" onclick="openTab(event, 'ReverseArbitrage')">反向套利计算器</button>
+            <button class="tablinks" onclick="openTab(event, 'BothDirections')">双向套利监测</button>
+        </div>
+        
+        <div id="ForwardArbitrage" class="tabcontent" style="display:block;">
+            <h3>正向套利: USDT → USD → BTC → USDT</h3>
+            
+            <div class="calculator">
+                <div class="form-group">
+                    <label for="f_initial_usdt">初始 USDT 金额:</label>
+                    <input type="number" id="f_initial_usdt" value="10000" min="1">
+                </div>
+                
+                <div class="form-group">
+                    <label for="f_usdt_usd_rate">USDT/USD 汇率 (1 USDT = ? USD):</label>
+                    <input type="number" id="f_usdt_usd_rate" value="0.99" step="0.0001" min="0.0001">
+                </div>
+                
+                <div class="form-group">
+                    <label for="f_usd_btc_rate">USD/BTC 汇率 (1 USD = ? BTC):</label>
+                    <input type="number" id="f_usd_btc_rate" value="0.000018" step="0.0000001" min="0.0000001">
+                </div>
+                
+                <div class="form-group">
+                    <label for="f_btc_usdt_rate">BTC/USDT 汇率 (1 BTC = ? USDT):</label>
+                    <input type="number" id="f_btc_usdt_rate" value="56000" step="1" min="1">
+                </div>
+                
+                <div class="form-group">
+                    <label for="f_fee_rate">交易手续费率 (%):</label>
+                    <input type="number" id="f_fee_rate" value="0.1" step="0.01" min="0" max="5">
+                </div>
+                
+                <button onclick="calculateForwardArbitrage()">计算套利结果</button>
+                
+                <div id="forward_result" class="result"></div>
+            </div>
+        </div>
+        
+        <div id="ReverseArbitrage" class="tabcontent">
+            <h3>反向套利: USDT → BTC → USD → USDT</h3>
+            
+            <div class="calculator">
+                <div class="form-group">
+                    <label for="r_initial_usdt">初始 USDT 金额:</label>
+                    <input type="number" id="r_initial_usdt" value="10000" min="1">
+                </div>
+                
+                <div class="form-group">
+                    <label for="r_usdt_btc_rate">USDT/BTC 汇率 (1 USDT = ? BTC):</label>
+                    <input type="number" id="r_usdt_btc_rate" value="0.00001786" step="0.00000001" min="0.00000001">
+                </div>
+                
+                <div class="form-group">
+                    <label for="r_btc_usd_rate">BTC/USD 汇率 (1 BTC = ? USD):</label>
+                    <input type="number" id="r_btc_usd_rate" value="55500" step="1" min="1">
+                </div>
+                
+                <div class="form-group">
+                    <label for="r_usd_usdt_rate">USD/USDT 汇率 (1 USD = ? USDT):</label>
+                    <input type="number" id="r_usd_usdt_rate" value="1.01" step="0.0001" min="0.0001">
+                </div>
+                
+                <div class="form-group">
+                    <label for="r_fee_rate">交易手续费率 (%):</label>
+                    <input type="number" id="r_fee_rate" value="0.1" step="0.01" min="0" max="5">
+                </div>
+                
+                <button onclick="calculateReverseArbitrage()">计算套利结果</button>
+                
+                <div id="reverse_result" class="result"></div>
+            </div>
+        </div>
+        
+        <div id="BothDirections" class="tabcontent">
+            <h3>双向套利监测</h3>
+            
+            <p>输入市场汇率，同时检测正向和反向套利机会</p>
+            
+            <div class="calculator">
+                <div class="form-group">
+                    <label for="b_initial_usdt">初始 USDT 金额:</label>
+                    <input type="number" id="b_initial_usdt" value="10000" min="1">
+                </div>
+                
+                <div class="form-group">
+                    <label for="b_usdt_usd_rate">USDT/USD 汇率 (1 USDT = ? USD):</label>
+                    <input type="number" id="b_usdt_usd_rate" value="0.99" step="0.0001" min="0.0001">
+                </div>
+                
+                <div class="form-group">
+                    <label for="b_btc_usdt_rate">BTC/USDT 汇率 (1 BTC = ? USDT):</label>
+                    <input type="number" id="b_btc_usdt_rate" value="56000" step="1" min="1">
+                </div>
+                
+                <div class="form-group">
+                    <label for="b_btc_usd_rate">BTC/USD 汇率 (1 BTC = ? USD):</label>
+                    <input type="number" id="b_btc_usd_rate" value="55500" step="1" min="1">
+                </div>
+                
+                <div class="form-group">
+                    <label for="b_fee_rate">交易手续费率 (%):</label>
+                    <input type="number" id="b_fee_rate" value="0.1" step="0.01" min="0" max="5">
+                </div>
+                
+                <button onclick="calculateBothDirections()">检测套利机会</button>
+                
+                <div id="both_result" class="result"></div>
+            </div>
+        </div>
+        
+        <h3>5. 双向套利分析</h3>
+        
+        <p>三角套利确实可以双向进行，具体取决于市场条件：</p>
+        
+        <ul>
+            <li><strong>正向套利 (USDT → USD → BTC → USDT)</strong>: 当 USDT→USD × USD→BTC × BTC→USDT × (1-f)³ > 1 时可行</li>
+            <li><strong>反向套利 (USDT → BTC → USD → USDT)</strong>: 当 USDT→BTC × BTC→USD × USD→USDT × (1-f)³ > 1 时可行</li>
+        </ul>
+        
+        <p>在高波动市场中，可能会出现以下情况：</p>
+        
+        <ul>
+            <li>某些时刻正向套利有利可图，而其他时刻反向套利有利可图</li>
+            <li>理论上，两个方向不会同时都有套利机会，因为这将形成套利循环</li>
+            <li>市场会通过套利活动逐渐消除价格差异，使套利条件不再满足</li>
+        </ul>
+        
+        <div class="example-box">
+            <p><strong>重要说明：</strong>最终结果确实都是维持 USD 和 BTC 数量不变，利润等于 USDT 的增量。无论是正向还是反向套利，我们都是从 USDT 开始，最终回到 USDT，目标是增加 USDT 的数量。</p>
+        </div>
+    </div>
+
+    <script>
+        function openTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+        
+        function calculateForwardArbitrage() {
+            const initialUsdt = parseFloat(document.getElementById('f_initial_usdt').value);
+            const usdt_usd_rate = parseFloat(document.getElementById('f_usdt_usd_rate').value);
+            const usd_btc_rate = parseFloat(document.getElementById('f_usd_btc_rate').value);
+            const btc_usdt_rate = parseFloat(document.getElementById('f_btc_usdt_rate').value);
+            const fee_rate = parseFloat(document.getElementById('f_fee_rate').value) / 100;
+            
+            // 计算套利条件
+            const arbitrage_condition = usdt_usd_rate * usd_btc_rate * btc_usdt_rate * Math.pow(1 - fee_rate, 3);
+            const has_arbitrage = arbitrage_condition > 1;
+            const profit_percentage = (arbitrage_condition - 1) * 100;
+            
+            // 计算详细的交易流程
+            const usd_amount = initialUsdt * usdt_usd_rate * (1 - fee_rate);
+            const btc_amount = usd_amount * usd_btc_rate * (1 - fee_rate);
+            const final_usdt = btc_amount * btc_usdt_rate * (1 - fee_rate);
+            const profit = final_usdt - initialUsdt;
+            
+            // 显示结果
+            const resultDiv = document.getElementById('forward_result');
+            if (has_arbitrage) {
+                resultDiv.className = "result profit";
+                resultDiv.innerHTML = `
+                    <p>✅ <strong>存在正向套利机会!</strong></p>
+                    <p>套利条件值: ${arbitrage_condition.toFixed(5)} > 1</p>
+                    <p>理论利润率: ${profit_percentage.toFixed(4)}%</p>
+                    <p>交易详情:</p>
+                    <p>- 初始: ${initialUsdt} USDT</p>
+                    <p>- 步骤1: ${initialUsdt} USDT → ${usd_amount.toFixed(4)} USD (扣除${fee_rate*100}%手续费)</p>
+                    <p>- 步骤2: ${usd_amount.toFixed(4)} USD → ${btc_amount.toFixed(8)} BTC (扣除${fee_rate*100}%手续费)</p>
+                    <p>- 步骤3: ${btc_amount.toFixed(8)} BTC → ${final_usdt.toFixed(4)} USDT (扣除${fee_rate*100}%手续费)</p>
+                    <p>- 最终利润: ${profit.toFixed(4)} USDT (${profit_percentage.toFixed(4)}%)</p>
+                `;
+            } else {
+                resultDiv.className = "result loss";
+                resultDiv.innerHTML = `
+                    <p>❌ <strong>不存在正向套利机会</strong></p>
+                    <p>套利条件值: ${arbitrage_condition.toFixed(5)} < 1</p>
+                    <p>理论损失率: ${Math.abs(profit_percentage).toFixed(4)}%</p>
+                    <p>交易详情:</p>
+                    <p>- 初始: ${initialUsdt} USDT</p>
+                    <p>- 步骤1: ${initialUsdt} USDT → ${usd_amount.toFixed(4)} USD (扣除${fee_rate*100}%手续费)</p>
+                    <p>- 步骤2: ${usd_amount.toFixed(4)} USD → ${btc_amount.toFixed(8)} BTC (扣除${fee_rate*100}%手续费)</p>
+                    <p>- 步骤3: ${btc_amount.toFixed(8)} BTC → ${final_usdt.toFixed(4)} USDT (扣除${fee_rate*100}%手续费)</p>
+                    <p>- 最终损失: ${Math.abs(profit).toFixed(4)} USDT (${Math.abs(profit_percentage).toFixed(4)}%)</p>
+                `;
+            }
+        }
+        
+        function calculateReverseArbitrage() {
+            const initialUsdt = parseFloat(document.getElementById('r_initial_usdt').value);
+            const usdt_btc_rate = parseFloat(document.getElementById('r_usdt_btc_rate').value);
+            const btc_usd_rate = parseFloat(document.getElementById('r_btc_usd_rate').value);
+            const usd_usdt_rate = parseFloat(document.getElementById('r_usd_usdt_rate').value);
+            const fee_rate = parseFloat(document.getElementById('r_fee_rate').value) / 100;
+            
+            // 计算套利条件
+            const arbitrage_condition = usdt_btc_rate * btc_usd_rate * usd_usdt_rate * Math.pow(1 - fee_rate, 3);
+            const has_arbitrage = arbitrage_condition > 1;
+            const profit_percentage = (arbitrage_condition - 1) * 100;
+            
+            // 计算详细的交易流程
+            const btc_amount = initialUsdt * usdt_btc_rate * (1 - fee_rate);
+            const usd_amount = btc_amount * btc_usd_rate * (1 - fee_rate);
+            const final_usdt = usd_amount * usd_usdt_rate * (1 - fee_rate);
+            const profit = final_usdt - initialUsdt;
+            
+            // 显示结果
+            const resultDiv = document.getElementById('reverse_result');
+            if (has_arbitrage) {
+                resultDiv.className = "result profit";
+                resultDiv.innerHTML = `
+                    <p>✅ <strong>存在反向套利机会!</strong></p>
+                    <p>套利条件值: ${arbitrage_condition.toFixed(5)} > 1</p>
+                    <p>理论利润率: ${profit_percentage.toFixed(4)}%</p>
+                    <p>交易详情:</p>
+                    <p>- 初始: ${initialUsdt} USDT</p>
+                    <p>- 步骤1: ${initialUsdt} USDT → ${btc_amount.toFixed(8)} BTC (扣除${fee_rate*100}%手续费)</p>
+                    <p>- 步骤2: ${btc_amount.toFixed(8)} BTC → ${usd_amount.toFixed(4)} USD (扣除${fee_rate*100}%手续费)</p>
+                    <p>- 步骤3: ${usd_amount.toFixed(4)} USD → ${final_usdt.toFixed(4)} USDT (扣除${fee_rate*100}%手续费)</p>
+                    <p>- 最终利润: ${profit.toFixed(4)} USDT (${profit_percentage.toFixed(4)}%)</p>
+                `;
+            } else {
+                resultDiv.className = "result loss";
+                resultDiv.innerHTML = `
+                    <p>❌ <strong>不存在反向套利机会</strong></p>
+                    <p>套利条件值: ${arbitrage_condition.toFixed(5)} < 1</p>
+                    <p>理论损失率: ${Math.abs(profit_percentage).toFixed(4)}%</p>
+                    <p>交易详情:</p>
+                    <p>- 初始: ${initialUsdt} USDT</p>
+                    <p>- 步骤1: ${initialUsdt} USDT → ${btc_amount.toFixed(8)} BTC (扣除${fee_rate*100}%手续费)</p>
+                    <p>- 步骤2: ${btc_amount.toFixed(8)} BTC → ${usd_amount.toFixed(4)} USD (扣除${fee_rate*100}%手续费)</p>
+                    <p>- 步骤3: ${usd_amount.toFixed(4)} USD → ${final_usdt.toFixed(4)} USDT (扣除${fee_rate*100}%手续费)</p>
+                    <p>- 最终损失: ${Math.abs(profit).toFixed(4)} USDT (${Math.abs(profit_percentage).toFixed(4)}%)</p>
+                `;
+            }
+        }
+        
+        function calculateBothDirections() {
+            const initialUsdt = parseFloat(document.getElementById('b_initial_usdt').value);
+            const usdt_usd_rate = parseFloat(document.getElementById('b_usdt_usd_rate').value);
+            const btc_usdt_rate = parseFloat(document.getElementById('b_btc_usdt_rate').value);
+            const btc_usd_rate = parseFloat(document.getElementById('b_btc_usd_rate').value);
+            const fee_rate = parseFloat(document.getElementById('b_fee_rate').value) / 100;
+            
+            // 计算其他汇率
+            const usdt_btc_rate = 1 / btc_usdt_rate;
+            const usd_btc_rate = 1 / btc_usd_rate;
+            const usd_usdt_rate = 1 / usdt_usd_rate;
+            
+            // 计算正向套利条件
+            const forward_condition = usdt_usd_rate * usd_btc_rate * btc_usdt_rate * Math.pow(1 - fee_rate, 3);
+            const has_forward_arbitrage = forward_condition > 1;
+            const forward_profit_percentage = (forward_condition - 1) * 100;
+            
+            // 计算反向套利条件
+            const reverse_condition = usdt_btc_rate * btc_usd_rate * usd_usdt_rate * Math.pow(1 - fee_rate, 3);
+            const has_reverse_arbitrage = reverse_condition > 1;
+            const reverse_profit_percentage = (reverse_condition - 1) * 100;
+            
+            // 显示结果
+            const resultDiv = document.getElementById('both_result');
+            let resultHTML = '';
+            
+            // 正向套利结果
+            if (has_forward_arbitrage) {
+                resultHTML += `
+                    <div style="padding: 10px; margin-bottom: 15px; background-color: #d4edda; border-left: 4px solid #28a745; border-radius: 4px;">
+                        <p>✅ <strong>存在正向套利机会 (USDT → USD → BTC → USDT)</strong></p>
+                        <p>套利条件值: ${forward_condition.toFixed(5)} > 1</p>
+                        <p>理论利润率: ${forward_profit_percentage.toFixed(4)}%</p>
+                    </div>
+                `;
+            } else {
+                resultHTML += `
+                    <div style="padding: 10px; margin-bottom: 15px; background-color: #f8d7da; border-left: 4px solid #dc3545; border-radius: 4px;">
+                        <p>❌ <strong>不存在正向套利机会 (USDT → USD → BTC → USDT)</strong></p>
+                        <p>套利条件值: ${forward_condition.toFixed(5)} < 1</p>
+                        <p>理论损失率: ${Math.abs(forward_profit_percentage).toFixed(4)}%</p>
+                    </div>
+                `;
+            }
+            
+            // 反向套利结果
+            if (has_reverse_arbitrage) {
+                resultHTML += `
+                    <div style="padding: 10px; margin-bottom: 15px; background-color: #d4edda; border-left: 4px solid #28a745; border-radius: 4px;">
+                        <p>✅ <strong>存在反向套利机会 (USDT → BTC → USD → USDT)</strong></p>
+                        <p>套利条件值: ${reverse_condition.toFixed(5)} > 1</p>
+                        <p>理论利润率: ${reverse_profit_percentage.toFixed(4)}%</p>
+                    </div>
+                `;
+            } else {
+                resultHTML += `
+                    <div style="padding: 10px; margin-bottom: 15px; background-color: #f8d7da; border-left: 4px solid #dc3545; border-radius: 4px;">
+                        <p>❌ <strong>不存在反向套利机会 (USDT → BTC → USD → USDT)</strong></p>
+                        <p>套利条件值: ${reverse_condition.toFixed(5)} < 1</p>
+                        <p>理论损失率: ${Math.abs(reverse_profit_percentage).toFixed(4)}%</p>
+                    </div>
+                `;
+            }
+            
+            // 汇率数据摘要
+            resultHTML += `
+                <div style="padding: 10px; margin-top: 15px; background-color: #e2e3e5; border-left: 4px solid #6c757d; border-radius: 4px;">
+                    <p><strong>当前市场汇率摘要：</strong></p>
+                    <p>- USDT/USD 汇率: 1 USDT = ${usdt_usd_rate} USD</p>
+                    <p>- USD/USDT 汇率: 1 USD = ${usd_usdt_rate.toFixed(6)} USDT</p>
+                    <p>- BTC/USDT 汇率: 1 BTC = ${btc_usdt_rate} USDT</p>
+                    <p>- USDT/BTC 汇率: 1 USDT = ${usdt_btc_rate.toFixed(8)} BTC</p>
+                    <p>- BTC/USD 汇率: 1 BTC = ${btc_usd_rate} USD</p>
+                    <p>- USD/BTC 汇率: 1 USD = ${usd_btc_rate.toFixed(8)} BTC</p>
+                </div>
+            `;
+            
+            // 分析结论
+            if (has_forward_arbitrage && has_reverse_arbitrage) {
+                resultHTML += `
+                    <div style="padding: 10px; margin-top: 15px; background-color: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px;">
+                        <p><strong>异常情况：</strong>理论上正向和反向套利不应同时存在，这可能是由于数据不一致或输入错误导致的。</p>
+                    </div>
+                `;
+            } else if (has_forward_arbitrage) {
+                resultHTML += `
+                    <div style="padding: 10px; margin-top: 15px; background-color: #d1ecf1; border-left: 4px solid #17a2b8; border-radius: 4px;">
+                        <p><strong>建议：</strong>执行正向套利 (USDT → USD → BTC → USDT)，预期利润率为 ${forward_profit_percentage.toFixed(4)}%</p>
+                    </div>
+                `;
+            } else if (has_reverse_arbitrage) {
+                resultHTML += `
+                    <div style="padding: 10px; margin-top: 15px; background-color: #d1ecf1; border-left: 4px solid #17a2b8; border-radius: 4px;">
+                        <p><strong>建议：</strong>执行反向套利 (USDT → BTC → USD → USDT)，预期利润率为 ${reverse_profit_percentage.toFixed(4)}%</p>
+                    </div>
+                `;
+            } else {
+                resultHTML += `
+                    <div style="padding: 10px; margin-top: 15px; background-color: #d1ecf1; border-left: 4px solid #17a2b8; border-radius: 4px;">
+                        <p><strong>建议：</strong>当前市场条件下不存在套利机会，建议继续监控市场变化。</p>
+                    </div>
+                `;
+            }
+            
+            resultDiv.innerHTML = resultHTML;
+        }
+    </script>
+</body>
+</html>
