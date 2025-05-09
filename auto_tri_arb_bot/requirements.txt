@@ -1,0 +1,15 @@
+# auto_tri_arb_bot/requirements.txt
+
+# 用于读取YAML配置文件
+pyyaml
+
+# 用于HTTP API请求
+requests
+
+# 用于WebSocket连接
+websockets==6.0
+
+# (可选) 用于更高级的异步处理或调度
+# aiohttp # 如果选择aiohttp而不是requests+websockets
+# apscheduler # 用于定时任务
+
