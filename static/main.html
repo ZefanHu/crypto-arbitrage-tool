@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>组合管理型三角套利机器人 - 项目展示</title>
+    <style>
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            background-color: #1a73e8;
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            border-radius: 5px 5px 0 0;
+            margin-bottom: 30px;
+        }
+        h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+        h2 {
+            font-size: 22px;
+            border-bottom: 2px solid #1a73e8;
+            padding-bottom: 10px;
+            margin-top: 30px;
+            color: #1a73e8;
+        }
+        h3 {
+            font-size: 18px;
+            color: #333;
+            margin-top: 20px;
+        }
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: #f1f1f1;
+            border: 1px solid #ddd;
+            border-bottom: none;
+            margin-right: 5px;
+            border-radius: 5px 5px 0 0;
+            transition: all 0.3s;
+        }
+        .tab.active {
+            background-color: #1a73e8;
+            color: white;
+            border-color: #1a73e8;
+        }
+        .tab-content {
+            display: none;
+            padding: 20px;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-top: none;
+            border-radius: 0 0 5px 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .module-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+        .module {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            width: 300px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+        .module:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .module-title {
+            font-weight: bold;
+            color: #1a73e8;
+            margin-bottom: 10px;
+            font-size: 18px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+        .module-description {
+            font-size: 14px;
+            color: #666;
+        }
+        .module-key-points {
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        .module-key-points ul {
+            padding-left: 20px;
+            margin: 5px 0;
+        }
+        .calculator {
+            background-color: white;
+            border-radius: 5px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .calculator-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #444;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        button {
+            background-color: #1a73e8;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #135cbc;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f1f8ff;
+            border-left: 4px solid #1a73e8;
+            border-radius: 0 4px 4px 0;
+        }
+        .result h3 {
+            margin-top: 0;
+            color: #1a73e8;
+        }
+        .result-item {
+            margin-bottom: 10px;
+        }
+        .result-label {
+            font-weight: bold;
+            display: inline-block;
+            width: 180px;
+        }
+        .diagram {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            overflow-x: auto;
+        }
+        .flow-chart {
+            width: 100%;
+            height: 500px;
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-style: italic;
+            color: #666;
+        }
+        .info-box {
+            background-color: #e8f4fd;
+            border-left: 4px solid #1a73e8;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 4px 4px 0;
+        }
+        .positive {
+            color: #28a745;
+            font-weight: bold;
+        }
+        .negative {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        .neutral {
+            color: #6c757d;
+        }
+        #moduleFlowDiagram {
+            width: 100%;
+            height: 500px;
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            color: #666;
+            font-size: 14px;
+            border-top: 1px solid #eee;
+        }
+        @media (max-width: 768px) {
+            .calculator-form {
+                grid-template-columns: 1fr;
+            }
+            .module {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>组合管理型三角套利机器人</h1>
+            <p>基于Python与SQLite的高效套利解决方案</p>
+        </header>
+
+        <div class="tabs">
+            <div class="tab active" data-tab="modules">模块架构</div>
+            <div class="tab" data-tab="calculator">套利计算器</div>
+            <div class="tab" data-tab="flow">流程图</div>
+        </div>
+
+        <div id="modules" class="tab-content active">
+            <h2>系统模块架构</h2>
+            <p>组合管理型三角套利机器人由8个核心模块组成，各模块职责明确，协同工作，确保套利过程的高效与安全。</p>
+            
+            <div class="module-container">
+                <!-- 模块1 -->
+                <div class="module">
+                    <div class="module-title">1. 配置管理模块</div>
+                    <div class="module-description">负责加载和管理系统配置，为其他模块提供统一的配置访问接口。</div>
+                    <div class="module-key-points">
+                        <strong>关键点：</strong>
+                        <ul>
+                            <li>分离普通参数与敏感信息</li>
+                            <li>套利交易对配置</li>
+                            <li>手续费和滑点设置</li>
+                            <li>资产组合目标比例</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- 模块2 -->
+                <div class="module">
+                    <div class="module-title">2. 数据采集与处理模块</div>
+                    <div class="module-description">通过WebSocket和RESTful API实时获取和处理市场数据，为套利决策提供基础。</div>
+                    <div class="module-key-points">
+                        <strong>关键点：</strong>
+                        <ul>
+                            <li>公共行情WebSocket订阅</li>
+                            <li>私有数据流实时更新</li>
+                            <li>事件驱动架构</li>
+                            <li>本地订单簿维护</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- 模块3 -->
+                <div class="module">
+                    <div class="module-title">3. 套利路径计算与决策模块</div>
+                    <div class="module-description">基于实时市场数据分析套利路径，计算潜在利润，并做出交易决策。</div>
+                    <div class="module-key-points">
+                        <strong>关键点：</strong>
+                        <ul>
+                            <li>考虑手续费和滑点的精确计算</li>
+                            <li>多腿交易中的动态评估</li>
+                            <li>最小盈利阈值过滤</li>
+                            <li>基于深度的可成交量限制</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- 模块4 -->
+                <div class="module">
+                    <div class="module-title">4. 交易执行模块</div>
+                    <div class="module-description">负责按照计算得出的套利路径执行交易，确保订单按预期成交。</div>
+                    <div class="module-key-points">
+                        <strong>关键点：</strong>
+                        <ul>
+                            <li>逻辑顺序执行三角套利</li>
+                            <li>每腿交易后的成交确认</li>
+                            <li>基于深度和余额的下单量计算</li>
+                            <li>订单状态实时监控</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- 模块5 -->
+                <div class="module">
+                    <div class="module-title">5. 风险管理模块</div>
+                    <div class="module-description">监控和处理交易过程中的各类风险，确保资金安全。</div>
+                    <div class="module-key-points">
+                        <strong>关键点：</strong>
+                        <ul>
+                            <li>订单超时自动取消</li>
+                            <li>API异常固定处理逻辑</li>
+                            <li>WebSocket断连处理</li>
+                            <li>套利机会中途消失处理</li>
+                            <li>亏损熔断机制</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- 模块6 -->
+                <div class="module">
+                    <div class="module-title">6. 资产平衡与组合管理模块</div>
+                    <div class="module-description">维护资产组合的目标比例，处理套利不完整情况下的资产平衡。</div>
+                    <div class="module-key-points">
+                        <strong>关键点：</strong>
+                        <ul>
+                            <li>USDT本位净值计算</li>
+                            <li>非预期资产处理</li>
+                            <li>目标资产比例维护</li>
+                            <li>再平衡策略执行</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- 模块7 -->
+                <div class="module">
+                    <div class="module-title">7. 监控与日志模块</div>
+                    <div class="module-description">记录系统运行状态、关键事件和决策过程，提供实时监控指标。</div>
+                    <div class="module-key-points">
+                        <strong>关键点：</strong>
+                        <ul>
+                            <li>多级别日志系统</li>
+                            <li>关键指标实时展示</li>
+                            <li>错误追溯与异常记录</li>
+                            <li>SQLite数据存储</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- 模块8 -->
+                <div class="module">
+                    <div class="module-title">8. 文档与教学模块</div>
+                    <div class="module-description">提供系统文档、架构说明和教学资料，便于理解和二次开发。</div>
+                    <div class="module-key-points">
+                        <strong>关键点：</strong>
+                        <ul>
+                            <li>详细的README与架构文档</li>
+                            <li>流程图与状态图</li>
+                            <li>代码注释与示例</li>
+                            <li>未来优化方向</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="info-box">
+                <h3>模块间关键交互</h3>
+                <p>所有模块通过清晰的接口协同工作，形成完整的套利执行流程。例如，数据采集模块捕获到新的行情变化，触发套利路径计算模块分析机会；发现有利可图的路径后，交易执行模块负责实际下单；风险管理模块全程监控，在异常情况下介入；资产平衡模块确保整体资产结构符合预期。</p>
+            </div>
+        </div>
+
+        <div id="calculator" class="tab-content">
+            <h2>三角套利计算器</h2>
+            <p>此计算器可以帮助您模拟三角套利过程，评估潜在利润和风险。输入相关参数后，系统将计算完整的套利路径和预期收益。</p>
+            
+            <div class="calculator">
+                <form id="arbitrageForm" class="calculator-form">
+                    <div class="form-group">
+                        <label for="startCurrency">起始货币</label>
+                        <select id="startCurrency">
+                            <option value="USDT">USDT</option>
+                            <option value="BTC">BTC</option>
+                            <option value="ETH">ETH</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="middleCurrency">中间货币</label>
+                        <select id="middleCurrency">
+                            <option value="ETH">ETH</option>
+                            <option value="USDC">USDC</option>
+                            <option value="BTC">BTC</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="endCurrency">结束货币</label>
+                        <select id="endCurrency">
+                            <option value="USDC">USDC</option>
+                            <option value="ETH">ETH</option>
+                            <option value="USDT">USDT</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="startAmount">起始金额</label>
+                        <input type="number" id="startAmount" value="1000" min="1">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="pair1Rate">交易对1汇率 (起始→中间)</label>
+                        <input type="number" id="pair1Rate" value="0.00034" step="0.00000001">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="pair2Rate">交易对2汇率 (中间→结束)</label>
+                        <input type="number" id="pair2Rate" value="1.001" step="0.000001">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="pair3Rate">交易对3汇率 (结束→起始)</label>
+                        <input type="number" id="pair3Rate" value="2950" step="0.01">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="feeRate">交易手续费率 (%)</label>
+                        <input type="number" id="feeRate" value="0.1" min="0" max="1" step="0.01">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="slippageRate">预估滑点率 (%)</label>
+                        <input type="number" id="slippageRate" value="0.05" min="0" max="1" step="0.01">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="minProfitThreshold">最小盈利阈值 (%)</label>
+                        <input type="number" id="minProfitThreshold" value="0.2" min="0" step="0.01">
+                    </div>
+                </form>
+                
+                <button id="calculateBtn">计算套利结果</button>
+                
+                <div id="calculationResult" class="result" style="display: none;">
+                    <h3>套利计算结果</h3>
+                    <div class="result-item">
+                        <span class="result-label">套利路径:</span>
+                        <span id="arbitragePath"></span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">起始金额:</span>
+                        <span id="initialAmount"></span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">第一笔交易:</span>
+                        <span id="leg1Result"></span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">第二笔交易:</span>
+                        <span id="leg2Result"></span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">第三笔交易:</span>
+                        <span id="leg3Result"></span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">最终金额:</span>
+                        <span id="finalAmount"></span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">净利润:</span>
+                        <span id="netProfit"></span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">利润率:</span>
+                        <span id="profitRate"></span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">总手续费成本:</span>
+                        <span id="totalFees"></span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">总滑点成本:</span>
+                        <span id="totalSlippage"></span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">是否满足最小盈利阈值:</span>
+                        <span id="meetsThreshold"></span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">建议:</span>
+                        <span id="recommendation"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="flow" class="tab-content">
+            <h2>系统流程图</h2>
+            <p>以下流程图展示了三角套利机器人的核心工作流程，包括模块交互和关键决策点。</p>
+            
+            <div class="diagram">
+                <h3>三角套利核心流程</h3>
+                <div id="moduleFlowDiagram">
+                    <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+                        <!-- 背景 -->
+                        <rect width="100%" height="100%" fill="#f9f9f9"/>
+                        
+                        <!-- 标题 -->
+                        <text x="50%" y="30" text-anchor="middle" font-size="16" font-weight="bold">组合管理型三角套利机器人 - 核心流程</text>
+                        
+                        <!-- 模块框 -->
+                        <!-- 数据采集模块 -->
+                        <rect x="50" y="70" width="150" height="60" rx="5" ry="5" fill="#e3f2fd" stroke="#1a73e8" stroke-width="2"/>
+                        <text x="125" y="95" text-anchor="middle" font-size="14" font-weight="bold">数据采集模块</text>
+                        <text x="125" y="115" text-anchor="middle" font-size="12">实时市场数据</text>
+                        
+                        <!-- 套利路径计算模块 -->
+                        <rect x="300" y="70" width="150" height="60" rx="5" ry="5" fill="#e3f2fd" stroke="#1a73e8" stroke-width="2"/>
+                        <text x="375" y="95" text-anchor="middle" font-size="14" font-weight="bold">套利路径计算</text>
+                        <text x="375" y="115" text-anchor="middle" font-size="12">发现套利机会</text>
+                        
+                        <!-- 决策菱形 -->
+                        <polygon points="375,170 425,210 375,250 325,210" fill="#fff3cd" stroke="#ffc107" stroke-width="2"/>
+                        <text x="375" y="210" text-anchor="middle" font-size="12" font-weight="bold">有利可图?</text>
+                        
+                        <!-- 交易执行模块-Leg1 -->
+                        <rect x="300" y="290" width="150" height="60" rx="5" ry="5" fill="#d4edda" stroke="#28a745" stroke-width="2"/>
+                        <text x="375" y="315" text-anchor="middle" font-size="14" font-weight="bold">交易执行-Leg1</text>
+                        <text x="375" y="335" text-anchor="middle" font-size="12">USDT → A</text>
+                        
+                        <!-- 再评估 -->
+                        <polygon points="375,390 425,430 375,470 325,430" fill="#fff3cd" stroke="#ffc107" stroke-width="2"/>
+                        <text x="375" y="425" text-anchor="middle" font-size="12" font-weight="bold">重新评估</text>
+                        <text x="375" y="445" text-anchor="middle" font-size="12">仍有利?</text>
+                        
+                        <!-- 交易执行模块-Leg2&3 -->
+                        <rect x="500" y="400" width="150" height="60" rx="5" ry="5" fill="#d4edda" stroke="#28a745" stroke-width="2"/>
+                        <text x="575" y="425" text-anchor="middle" font-size="14" font-weight="bold">交易执行</text>
+                        <text x="575" y="445" text-anchor="middle" font-size="12">完成Leg2&3</text>
+                        
+                        <!-- 资产平衡模块 -->
+                        <rect x="100" y="400" width="150" height="60" rx="5" ry="5" fill="#f8d7da" stroke="#dc3545" stroke-width="2"/>
+                        <text x="175" y="425" text-anchor="middle" font-size="14" font-weight="bold">资产平衡</text>
+                        <text x="175" y="445" text-anchor="middle" font-size="12">处理未完成交易</text>
+                        
+                        <!-- 风险管理监控 -->
+                        <rect x="550" y="170" width="150" height="60" rx="5" ry="5" fill="#f8d7da" stroke="#dc3545" stroke-width="2"/>
+                        <text x="625" y="195" text-anchor="middle" font-size="14" font-weight="bold">风险管理</text>
+                        <text x="625" y="215" text-anchor="middle" font-size="12">全程监控</text>
+                        
+                        <!-- 连接线 -->
+                        <!-- 数据采集->套利计算 -->
+                        <line x1="200" y1="100" x2="300" y2="100" stroke="#1a73e8" stroke-width="2" marker-end="url(#arrowhead)"/>
+                        
+                        <!-- 套利计算->决策 -->
+                        <line x1="375" y1="130" x2="375" y2="170" stroke="#1a73e8" stroke-width="2" marker-end="url(#arrowhead)"/>
+                        
+                        <!-- 决策->交易执行Leg1 -->
+                        <line x1="375" y1="250" x2="375" y2="290" stroke="#28a745" stroke-width="2" marker-end="url(#arrowhead)"/>
+                        <text x="385" y="275" font-size="12" fill="#28a745">是</text>
+                        
+                        <!-- 决策->监控 (无套利机会) -->
+                        <line x1="425" y1="210" x2="550" y2="210" stroke="#6c757d" stroke-width="2" stroke-dasharray="5,5" marker-end="url(#arrowhead)"/>
+                        <text x="480" y="200" font-size="12" fill="#6c757d">否</text>
+                        
+                        <!-- 交易执行Leg1->再评估 -->
+                        <line x1="375" y1="350" x2="375" y2="390" stroke="#1a73e8" stroke-width="2" marker-end="url(#arrowhead)"/>
+                        
+                        <!-- 再评估->交易执行Leg2&3 -->
+                        <line x1="425" y1="430" x2="500" y2="430" stroke="#28a745" stroke-width="2" marker-end="url(#arrowhead)"/>
+                        <text x="455" y="420" font-size="12" fill="#28a745">是</text>
+                        
+                        <!-- 再评估->资产平衡 -->
+                        <line x1="325" y1="430" x2="250" y2="430" stroke="#dc3545" stroke-width="2" marker-end="url(#arrowhead)"/>
+                        <text x="280" y="420" font-size="12" fill="#dc3545">否</text>
+                        
+                        <!-- 风险管理连线 -->
+                        <line x1="625" y1="230" x2="625" y2="320" stroke="#dc3545" stroke-width="2" stroke-dasharray="5,5"/>
+                        <line x1="625" y1="320" x2="460" y2="320" stroke="#dc3545" stroke-width="2" stroke-dasharray="5,5" marker-end="url(#arrowhead)"/>
+                        
+                        <!-- 箭头定义 -->
+                        <defs>
+                            <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                <polygon points="0 0, 10 3.5, 0 7" />
+                            </marker>
+                        </defs>
+                    </svg>
+                </div>
+                
+                <div class="info-box">
+                    <h3>流程说明</h3>
+                    <p>1. <strong>数据采集模块</strong>通过WebSocket实时获取市场数据，推送给套利路径计算模块。</p>
+                    <p>2. <strong>套利路径计算模块</strong>分析数据，寻找潜在套利机会。</p>
+                    <p>3. 系统判断是否有利可图，若有，则进入交易执行阶段，否则继续监控。</p>
+                    <p>4. <strong>交易执行模块</strong>首先执行第一笔交易(Leg1)。</p>
+                    <p>5. Leg1成交后，系统<strong>重新评估</strong>剩余路径是否仍有利可图。</p>
+                    <p>6. 若仍有利，继续完成Leg2和Leg3；若机会消失，则触发<strong>资产平衡模块</strong>处理已持有的非预期资产。</p>
+                    <p>7. <strong>风险管理模块</strong>全程监控交易执行，处理超时、API异常等风险事件。</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>组合管理型三角套利机器人 &copy; 2025 - 基于Python与SQLite的高效套利解决方案</p>
+        </div>
+    </div>
+
+    <script>
+        // 切换标签页
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabId = tab.getAttribute('data-tab');
+                
+                // 移除所有活动标签
+                tabs.forEach(t => t.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+                
+                // 激活当前标签
+                tab.classList.add('active');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+        
+        // 套利计算器逻辑
+        document.getElementById('calculateBtn').addEventListener('click', function() {
+            // 获取输入值
+            const startCurrency = document.getElementById('startCurrency').value;
+            const middleCurrency = document.getElementById('middleCurrency').value;
+            const endCurrency = document.getElementById('endCurrency').value;
+            const startAmount = parseFloat(document.getElementById('startAmount').value);
+            const pair1Rate = parseFloat(document.getElementById('pair1Rate').value);
+            const pair2Rate = parseFloat(document.getElementById('pair2Rate').value);
+            const pair3Rate = parseFloat(document.getElementById('pair3Rate').value);
+            const feeRate = parseFloat(document.getElementById('feeRate').value) / 100;
+            const slippageRate = parseFloat(document.getElementById('slippageRate').value) / 100;
+            const minProfitThreshold = parseFloat(document.getElementById('minProfitThreshold').value) / 100;
+            
+            // 计算套利过程
+            // 第一笔交易: 起始货币 -> 中间货币
+            const leg1Amount = startAmount;
+            const leg1Fee = leg1Amount * feeRate;
+            const leg1Slippage = leg1Amount * slippageRate;
+            const middleAmount = (leg1Amount - leg1Fee - leg1Slippage) * pair1Rate;
+            
+            // 第二笔交易: 中间货币 -> 结束货币
+            const leg2Fee = middleAmount * feeRate;
+            const leg2Slippage = middleAmount * slippageRate;
+            const endAmount = (middleAmount - leg2Fee - leg2Slippage) * pair2Rate;
+            
+            // 第三笔交易: 结束货币 -> 起始货币
+            const leg3Fee = endAmount * feeRate;
+            const leg3Slippage = endAmount * slippageRate;
+            const finalAmount = (endAmount - leg3Fee - leg3Slippage) * pair3Rate;
+            
+            // 计算利润和利润率
+            const netProfit = finalAmount - startAmount;
+            const profitRate = (netProfit / startAmount) * 100;
+            const totalFees = leg1Fee + (leg2Fee * pair1Rate * pair2Rate * pair3Rate) + (leg3Fee * pair2Rate * pair3Rate);
+            const totalSlippage = leg1Slippage + (leg2Slippage * pair1Rate * pair2Rate * pair3Rate) + (leg3Slippage * pair2Rate * pair3Rate);
+            const meetsThreshold = profitRate >= minProfitThreshold * 100;
+            
+            // 显示结果
+            document.getElementById('arbitragePath').textContent = `${startCurrency} → ${middleCurrency} → ${endCurrency} → ${startCurrency}`;
+            document.getElementById('initialAmount').textContent = `${startAmount.toFixed(8)} ${startCurrency}`;
+            document.getElementById('leg1Result').textContent = `${leg1Amount.toFixed(8)} ${startCurrency} → ${middleAmount.toFixed(8)} ${middleCurrency} (费用: ${leg1Fee.toFixed(8)} ${startCurrency}, 滑点: ${leg1Slippage.toFixed(8)} ${startCurrency})`;
+            document.getElementById('leg2Result').textContent = `${middleAmount.toFixed(8)} ${middleCurrency} → ${endAmount.toFixed(8)} ${endCurrency} (费用: ${leg2Fee.toFixed(8)} ${middleCurrency}, 滑点: ${leg2Slippage.toFixed(8)} ${middleCurrency})`;
+            document.getElementById('leg3Result').textContent = `${endAmount.toFixed(8)} ${endCurrency} → ${finalAmount.toFixed(8)} ${startCurrency} (费用: ${leg3Fee.toFixed(8)} ${endCurrency}, 滑点: ${leg3Slippage.toFixed(8)} ${endCurrency})`;
+            document.getElementById('finalAmount').textContent = `${finalAmount.toFixed(8)} ${startCurrency}`;
+            document.getElementById('netProfit').textContent = `${netProfit.toFixed(8)} ${startCurrency} (${netProfit >= 0 ? '+' : ''}${netProfit.toFixed(4)})`;
+            document.getElementById('netProfit').className = netProfit >= 0 ? 'positive' : 'negative';
+            document.getElementById('profitRate').textContent = `${profitRate.toFixed(4)}%`;
+            document.getElementById('profitRate').className = profitRate >= 0 ? 'positive' : 'negative';
+            document.getElementById('totalFees').textContent = `${totalFees.toFixed(8)} ${startCurrency}`;
+            document.getElementById('totalSlippage').textContent = `${totalSlippage.toFixed(8)} ${startCurrency}`;
+            document.getElementById('meetsThreshold').textContent = meetsThreshold ? '是' : '否';
+            document.getElementById('meetsThreshold').className = meetsThreshold ? 'positive' : 'negative';
+            
+            // 建议
+            let recommendation = '';
+            if (profitRate < 0) {
+                recommendation = `此路径会亏损 ${Math.abs(profitRate).toFixed(4)}%，不建议执行套利。`;
+            } else if (!meetsThreshold) {
+                recommendation = `虽有盈利 ${profitRate.toFixed(4)}%，但未达到最小盈利阈值 ${(minProfitThreshold * 100).toFixed(2)}%，建议观望。`;
+            } else {
+                recommendation = `此路径有 ${profitRate.toFixed(4)}% 的盈利，超过最小盈利阈值，可以执行套利。`;
+            }
+            document.getElementById('recommendation').textContent = recommendation;
+            document.getElementById('recommendation').className = meetsThreshold ? 'positive' : (profitRate < 0 ? 'negative' : 'neutral');
+            
+            // 显示结果区域
+            document.getElementById('calculationResult').style.display = 'block';
+        });
+    </script>
+</body>
+</html>
